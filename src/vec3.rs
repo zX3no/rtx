@@ -34,8 +34,8 @@ impl Vec3 {
         self.length_squared().sqrt()
     }
 
-    pub fn dot(&self, other: Vec3) -> f64 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+    pub fn dot(first: Vec3, second: Vec3) -> f64 {
+        first.x * second.x + first.y * second.y + first.z * second.z
     }
 
     pub fn cross(&self, other: Vec3) -> Vec3 {
