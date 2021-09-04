@@ -1,5 +1,6 @@
 mod vec3;
-use vec3::{Color, Vec3};
+use vec3::Color;
+
 fn main() {
     //Image
     let image_width: f64 = 256.0;
@@ -13,11 +14,7 @@ fn main() {
     for j in (0..image_height as i64).rev() {
         eprintln!("\rScanlines remaining: {}", j);
         for i in (0..image_width as i64).rev() {
-            let pixel_color = Color {
-                x: i as f64 / image_width,
-                y: j as f64 / image_height,
-                z: 0.25,
-            };
+            let pixel_color = Color::new(i as f64 / image_width, j as f64 / image_height, 0.25);
             pixel_color.write_color();
         }
     }

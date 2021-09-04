@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, SubAssign};
 
 pub type Point3 = Vec3;
@@ -22,6 +23,9 @@ impl Color {
 }
 
 impl Vec3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
+        Vec3 { x, y, z }
+    }
     pub fn length_squared(&self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
