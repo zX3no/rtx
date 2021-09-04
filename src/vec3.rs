@@ -1,10 +1,10 @@
 #![allow(dead_code)]
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -45,6 +45,10 @@ impl Vec3 {
             z: self.x * other.y - self.y * other.x,
         }
     }
+
+    pub fn unit_vector(&self) -> Vec3 {
+        *self / self.length()
+    }
 }
 
 impl Add for Vec3 {
@@ -55,6 +59,18 @@ impl Add for Vec3 {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+        }
+    }
+}
+
+impl Sub for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
         }
     }
 }
@@ -71,6 +87,30 @@ impl Mul for Vec3 {
     }
 }
 
+impl Mul<f64> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: f64) -> Vec3 {
+        Vec3 {
+            x: self.x * other,
+            y: self.y * other,
+            z: self.z * other,
+        }
+    }
+}
+
+impl Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
+        }
+    }
+}
+
 impl Div for Vec3 {
     type Output = Vec3;
 
@@ -79,6 +119,18 @@ impl Div for Vec3 {
             x: self.x / other.x,
             y: self.y / other.y,
             z: self.z / other.z,
+        }
+    }
+}
+
+impl Div<f64> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, other: f64) -> Vec3 {
+        Vec3 {
+            x: self.x / other,
+            y: self.y / other,
+            z: self.z / other,
         }
     }
 }
