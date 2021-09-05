@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
@@ -23,7 +23,11 @@ impl Color {
 }
 
 impl Vec3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
+    pub fn new() -> Vec3 {
+        Vec3::from(0.0, 0.0, 0.0)
+    }
+
+    pub fn from(x: f64, y: f64, z: f64) -> Vec3 {
         Vec3 { x, y, z }
     }
     pub fn length_squared(&self) -> f64 {
@@ -164,5 +168,17 @@ impl DivAssign for Vec3 {
         self.x /= other.x;
         self.y /= other.y;
         self.z /= other.z;
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
     }
 }
