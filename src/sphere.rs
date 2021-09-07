@@ -17,13 +17,17 @@ impl HitRecord {
             front_face: true,
         }
     }
-    pub fn set_face_normal(&mut self, r: &Ray, outward_normal: &Vec3) {
-        self.front_face = Vec3::dot(r.direction, *outward_normal) < 0.0;
-        self.normal = if self.front_face {
-            *outward_normal
-        } else {
-            -*outward_normal
-        };
+    pub fn from(p: Point3, mut normal: Vec3, t: f64, front_face: bool) -> HitRecord {
+        normal = if front_face { normal } else { -normal };
+        HitRecord {
+            p,
+            normal,
+            t,
+            front_face,
+        }
+    }
+    pub fn get_outward_normal(r: &Ray, outward_normal: Vec3) -> bool {
+        Vec3::dot(r.direction, outward_normal) < 0.0
     }
 }
 
@@ -39,7 +43,8 @@ impl Sphere {
 pub trait Hittable {
     fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
 }
-impl Hittable for Vec<Box<Hittable>> {
+impl Hittable for Vec<Box<dyn Hittable>> {
+    //todo this is not my code and I don't know what it does
     fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         let mut hit: Option<HitRecord> = None;
 
@@ -47,16 +52,12 @@ impl Hittable for Vec<Box<Hittable>> {
             if let Some(candidate_hit) = hitable.hit(ray, tmin, tmax) {
                 match hit {
                     None => hit = Some(candidate_hit),
-                    Some(prev) => {
-                        if candidate_hit.t < prev.t {
-                            hit = Some(candidate_hit);
-                        }
-                    }
+                    Some(_) => (),
                 }
             }
         }
 
-        hit
+        return hit;
     }
 }
 
@@ -75,21 +76,22 @@ impl Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         //Find the nearest root that lies in the acceptable range.
-        let mut root = -half_b - sqrtd / a;
+        let mut root = (-half_b - sqrtd) / a;
         if root < tmin || tmax < root {
-            root = -half_b + sqrtd / a;
+            root = (-half_b + sqrtd) / a;
 
             if root < tmin || tmax < root {
                 return None;
             }
         }
-        let mut rec = HitRecord::new();
-        rec.t = root;
-        rec.p = ray.at(rec.t);
-        rec.normal = rec.p - self.center / self.radius;
 
-        let outward_normal = rec.p - self.center / self.radius;
-        rec.set_face_normal(ray, &outward_normal);
+        let p = ray.at(root);
+        let rec = HitRecord::from(
+            p,
+            (p - self.center) / self.radius,
+            root,
+            HitRecord::get_outward_normal(ray, (p - self.center) / self.radius),
+        );
 
         return Some(rec);
     }
