@@ -21,7 +21,7 @@ fn hit_sphere(center: &Point3, radius: f64, ray: &Ray) -> f64 {
 
 fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     match world.hit(ray, 0.0, f64::MAX) {
-        Some(rec) => return 0.5 * rec.normal + Color::from(1.0, 1.0, 1.0),
+        Some(rec) => return 0.5 * (rec.normal + Color::from(1.0, 1.0, 1.0)),
         None => (),
     }
 

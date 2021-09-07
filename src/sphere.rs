@@ -44,20 +44,15 @@ pub trait Hittable {
     fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord>;
 }
 impl Hittable for Vec<Box<dyn Hittable>> {
-    //todo this is not my code and I don't know what it does
     fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
-        let mut hit: Option<HitRecord> = None;
-
-        for hitable in self {
-            if let Some(candidate_hit) = hitable.hit(ray, tmin, tmax) {
-                match hit {
-                    None => hit = Some(candidate_hit),
-                    Some(_) => (),
-                }
+        for hittable in self {
+            match hittable.hit(ray, tmin, tmax) {
+                Some(thing) => return Some(thing),
+                None => (),
             }
         }
 
-        return hit;
+        return None;
     }
 }
 
