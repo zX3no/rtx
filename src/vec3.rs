@@ -21,7 +21,11 @@ impl Color {
         );
     }
 }
-
+impl Default for Vec3 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl Vec3 {
     pub fn new() -> Vec3 {
         Vec3::from(0.0, 0.0, 0.0)

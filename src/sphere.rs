@@ -9,14 +9,6 @@ pub struct HitRecord {
     pub front_face: bool,
 }
 impl HitRecord {
-    pub fn new() -> HitRecord {
-        HitRecord {
-            p: Point3::from(0.0, 0.0, 0.0),
-            normal: Vec3::from(0.0, 0.0, 0.0),
-            t: 0.0,
-            front_face: true,
-        }
-    }
     pub fn from(p: Point3, mut normal: Vec3, t: f64, front_face: bool) -> HitRecord {
         normal = if front_face { normal } else { -normal };
         HitRecord {
@@ -46,13 +38,12 @@ pub trait Hittable {
 impl Hittable for Vec<Box<dyn Hittable>> {
     fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         for hittable in self {
-            match hittable.hit(ray, tmin, tmax) {
-                Some(thing) => return Some(thing),
-                None => (),
+            if let Some(thing) = hittable.hit(ray, tmin, tmax) {
+                return Some(thing);
             }
         }
 
-        return None;
+        None
     }
 }
 
@@ -88,6 +79,6 @@ impl Hittable for Sphere {
             HitRecord::get_outward_normal(ray, (p - self.center) / self.radius),
         );
 
-        return Some(rec);
+        Some(rec)
     }
 }
