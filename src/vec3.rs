@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use rand::{thread_rng, Rng};
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 pub type Point3 = Vec3;
@@ -22,15 +23,14 @@ impl Color {
         return x;
     }
     pub fn write_color(&self, samples_per_pixel: f64) {
-        let scale = 1.0 / samples_per_pixel;
-
         let mut r = self.x;
         let mut g = self.y;
         let mut b = self.z;
 
-        r *= scale;
-        g *= scale;
-        b *= scale;
+        let scale = 1.0 / samples_per_pixel;
+        r = (scale * r).sqrt();
+        g = (scale * g).sqrt();
+        b = (scale * b).sqrt();
 
         println!(
             "{} {} {}",
@@ -75,6 +75,26 @@ impl Vec3 {
 
     pub fn unit_vector(&self) -> Vec3 {
         *self / self.length()
+    }
+    // pub fn random() -> Vec3 {
+    //     Vec3::from(fastrand::f64(), fastrand::f64(), fastrand::f64())
+    // }
+    pub fn random(min: f64, max: f64) -> Vec3 {
+        Vec3::from(
+            thread_rng().gen_range(min..max),
+            thread_rng().gen_range(min..max),
+            thread_rng().gen_range(min..max),
+        )
+        // Vec3::from(0.1, 0.5, -0.1)
+    }
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Vec3::random(-1.0, 1.0);
+            if p.length_squared() >= 1.0 {
+                continue;
+            };
+            return p;
+        }
     }
 }
 

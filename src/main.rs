@@ -8,9 +8,14 @@ use ray::Ray;
 use sphere::{HitRecord, Hittable, Sphere};
 use vec3::{Color, Point3, Vec3};
 
-fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
+fn ray_color(ray: &Ray, world: &dyn Hittable, depth: usize) -> Color {
+    if depth <= 0 {
+        return Color::new();
+    }
+
     if let Some(rec) = world.hit(ray, 0.0, f64::MAX) {
-        return 0.5 * (rec.normal + Color::from(1.0, 1.0, 1.0));
+        let target = rec.p + rec.normal + Vec3::random_in_unit_sphere();
+        return 0.5 * ray_color(&Ray::from(rec.p, target - rec.p), world, depth - 1);
     }
 
     let unit_direction = ray.direction.unit_vector();
@@ -30,6 +35,7 @@ fn main() {
     let image_width = 400.0;
     let image_height = image_width / aspect_ratio;
     let samples_per_pixel = 100;
+    let max_depth = 50;
 
     //World
     let spheres = vec![
@@ -57,7 +63,7 @@ fn main() {
                 let u = (i as f64 + random()) / image_width;
                 let v = (j as f64 + random()) / image_height;
                 let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, &world);
+                pixel_color += ray_color(&ray, &world, max_depth);
             }
             pixel_color.write_color(samples_per_pixel as f64);
         }
