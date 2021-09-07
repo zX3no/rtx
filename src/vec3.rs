@@ -12,12 +12,31 @@ pub struct Vec3 {
 }
 
 impl Color {
-    pub fn write_color(&self) {
+    pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
+        if x < min {
+            return min;
+        };
+        if x > max {
+            return max;
+        };
+        return x;
+    }
+    pub fn write_color(&self, samples_per_pixel: f64) {
+        let scale = 1.0 / samples_per_pixel;
+
+        let mut r = self.x;
+        let mut g = self.y;
+        let mut b = self.z;
+
+        r *= scale;
+        g *= scale;
+        b *= scale;
+
         println!(
             "{} {} {}",
-            (255.99 * self.x) as i64,
-            (255.99 * self.y) as i64,
-            (255.99 * self.z) as i64,
+            (256.0 * Color::clamp(r, 0.0, 0.999)) as i64,
+            (256.0 * Color::clamp(g, 0.0, 0.999)) as i64,
+            (256.0 * Color::clamp(b, 0.0, 0.999)) as i64,
         );
     }
 }

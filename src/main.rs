@@ -1,7 +1,9 @@
 #![allow(unused_imports)]
+mod camera;
 mod ray;
 mod sphere;
 mod vec3;
+use camera::Camera;
 use ray::Ray;
 use sphere::{HitRecord, Hittable, Sphere};
 use vec3::{Color, Point3, Vec3};
@@ -18,11 +20,16 @@ fn ray_color(ray: &Ray, world: &dyn Hittable) -> Color {
     (1.0 - t) * Color::from(1.0, 1.0, 1.0) + t * Color::from(0.5, 0.7, 1.0)
 }
 
+fn random() -> f64 {
+    fastrand::f64()
+}
+
 fn main() {
     //Image
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400.0;
     let image_height = image_width / aspect_ratio;
+    let samples_per_pixel = 100;
 
     //World
     let spheres = vec![
@@ -35,15 +42,7 @@ fn main() {
         .collect();
 
     //Camera
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
-
-    let origin = Point3::from(0.0, 0.0, 0.0);
-    let horizontal = Vec3::from(viewport_width, 0.0, 0.0);
-    let vertical = Vec3::from(0.0, viewport_height, 0.0);
-    let lower_left_corner =
-        origin - horizontal / 2.0 - vertical / 2.0 - Vec3::from(0.0, 0.0, focal_length);
+    let camera = Camera::new();
 
     //Render
     println!("P3");
@@ -53,14 +52,14 @@ fn main() {
     for j in (0..image_height as i64).rev() {
         eprintln!("\rScanlines remaining: {}", j);
         for i in (0..image_width as i64).rev() {
-            let u = i as f64 / image_width;
-            let v = j as f64 / image_height;
-            let ray = Ray::new(
-                origin,
-                lower_left_corner + u * horizontal + v * vertical - origin,
-            );
-            let pixel_color = ray_color(&ray, &world);
-            pixel_color.write_color();
+            let mut pixel_color = Color::new();
+            for _ in 0..samples_per_pixel {
+                let u = (i as f64 + random()) / image_width;
+                let v = (j as f64 + random()) / image_height;
+                let ray = camera.get_ray(u, v);
+                pixel_color += ray_color(&ray, &world);
+            }
+            pixel_color.write_color(samples_per_pixel as f64);
         }
     }
 
