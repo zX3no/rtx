@@ -1,12 +1,13 @@
-#![allow(unused_imports)]
 mod camera;
+mod material;
 mod ray;
 mod sphere;
 mod vec3;
+
 use camera::Camera;
 use ray::Ray;
-use sphere::{HitRecord, Hittable, Sphere};
-use vec3::{Color, Point3, Vec3};
+use sphere::{Hittable, Sphere};
+use vec3::{Color, Vec3};
 
 fn ray_color(ray: &Ray, world: &dyn Hittable, depth: usize) -> Color {
     if depth <= 0 {
@@ -34,18 +35,18 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400.0;
     let image_height = image_width / aspect_ratio;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 400;
     let max_depth = 50;
 
     //World
-    let spheres = vec![
-        Sphere::from(Vec3::from(0.0, 0.0, -1.0), 0.5),
-        Sphere::from(Vec3::from(0.0, -100.5, -1.0), 100.0),
-    ];
-    let world: Vec<Box<dyn Hittable>> = spheres
-        .into_iter()
-        .map(|s| Box::new(s) as Box<dyn Hittable>)
-        .collect();
+    // let spheres = vec![
+    //     Sphere::from(Vec3::from(0.0, 0.0, -1.0), 0.5),
+    //     Sphere::from(Vec3::from(0.0, -100.5, -1.0), 100.0),
+    // ];
+    // let world: Vec<Box<dyn Hittable>> = spheres
+    //     .into_iter()
+    //     .map(|s| Box::new(s) as Box<dyn Hittable>)
+    //     .collect();
 
     //Camera
     let camera = Camera::new();
@@ -63,7 +64,7 @@ fn main() {
                 let u = (i as f64 + random()) / image_width;
                 let v = (j as f64 + random()) / image_height;
                 let ray = camera.get_ray(u, v);
-                pixel_color += ray_color(&ray, &world, max_depth);
+                // pixel_color += ray_color(&ray, &world, max_depth);
             }
             pixel_color.write_color(samples_per_pixel as f64);
         }
