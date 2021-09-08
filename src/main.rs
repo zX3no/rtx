@@ -14,7 +14,7 @@ fn ray_color(ray: &Ray, world: &dyn Hittable, depth: usize) -> Color {
     }
 
     if let Some(rec) = world.hit(ray, 0.001, f64::MAX) {
-        let target = rec.p + rec.normal + Vec3::random_unit_vector();
+        let target = rec.p + Vec3::random_in_hemisphere(rec.normal);
         return 0.5 * ray_color(&Ray::from(rec.p, target - rec.p), world, depth - 1);
     }
 
